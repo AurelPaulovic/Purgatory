@@ -2,6 +2,13 @@
 namespace Abyss\DataModel\Object;
 use \Abyss\DataModel\Column as Col;
 
+/**
+ *
+ * @author APA
+ *
+ * TODO: change doc language
+ *
+ */
 abstract class DataObject implements \ArrayAccess, \IteratorAggregate, iClonable {
 
     /********************
