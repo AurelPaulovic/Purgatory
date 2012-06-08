@@ -1,7 +1,7 @@
 <?php
 namespace Abyss\DataModel\Column;
 
-class DataColumn {
+abstract class DataColumn {
     private $value=null;
 
     function __construct($value) {
