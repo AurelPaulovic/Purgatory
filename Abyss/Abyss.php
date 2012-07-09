@@ -65,7 +65,10 @@ final class Abyss {
 			);
 
 			foreach($locations as &$loc) {
-				if(file_exists($loc)) { require($loc); return; }
+				if(file_exists($loc)) {
+					require($loc);
+					return;
+				}
 			}
 		}
 	}
