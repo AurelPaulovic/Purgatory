@@ -1,5 +1,5 @@
 <?php
-namespace Abyss\Pages;
+namespace Abyss\Components;
 
 /**
  * Requires the implementing object to be able to be persisted (serialize, unserialize, etc.)
