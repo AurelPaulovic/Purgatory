@@ -1,5 +1,5 @@
 <?php
-namespace Abyss\Components;
+namespace Abyss\Component;
 
 trait tUserPersistent {
 

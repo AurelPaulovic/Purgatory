@@ -1,5 +1,5 @@
 <?php
-namespace Abyss\Templates;
+namespace Abyss\Template;
 
 abstract class Template {
 	/**

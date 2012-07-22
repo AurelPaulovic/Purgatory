@@ -1,5 +1,5 @@
 <?php
-namespace Abyss\Components;
+namespace Abyss\Component;
 
 
 abstract class StatefulComponent extends Component {

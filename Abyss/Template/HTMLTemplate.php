@@ -1,15 +1,14 @@
 <?php
-namespace Abyss\Templates;
+namespace Abyss\Template;
 
-class XHTMLTemplate extends Template {
-
-	protected function __construct($file=null,$string=null) {
+class HTMLTemplate extends Template {
+	private function __construct($file=null,$string=null) {
 		parent::__construct('1.0','UTF-8');
 
 		$options = LIBXML_COMPACT | LIBXML_NOWARNING | LIBXML_NOXMLDECL | LIBXML_PARSEHUGE;
 
-		if($file!=null) $this->dom->load($file,$options);
-		else $this->dom->loadXML($string,$options);
+		if($file!=null) $this->dom->loadHTMLFile($file,$options);
+		else $this->dom->loadHTML($string,$options);
 	}
 
 	public static function loadFile($file) {
@@ -17,12 +16,12 @@ class XHTMLTemplate extends Template {
 		return new self(realpath($file));
 	}
 
-	public static function loadString($string) {
+	public static function loadString($tpl) {
 		//TODO nejaka kontrola stringu mozno
-		return new self(null,$string);
+		return new self(null,$tpl);
 	}
 
 	public function save() {
-		return $this->dom->saveXML();
+		return $this->dom->saveHTML();
 	}
 }

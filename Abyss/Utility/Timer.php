@@ -1,5 +1,5 @@
 <?php
-namespace Abyss\Utilities;
+namespace Abyss\Utility;
 
 class Timer {
 	static $timers = array();
