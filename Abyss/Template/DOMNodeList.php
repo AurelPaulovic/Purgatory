@@ -13,7 +13,7 @@ namespace Abyss\Template;
 class DOMNodeList implements iDOMNodeList {
 	/**
 	 * List of matched Nodes
-	 * @var array
+	 * @var \Abyss\Template\iDOMNode[]
 	 */
 	private $list = array();
 
@@ -30,7 +30,6 @@ class DOMNodeList implements iDOMNodeList {
 	 *
 	 * @param \Traversable|array|\Abyss\Template\iDOMNode $nodes an array (\Traversable) of \Abyss\Template\iDOMNode-s or a single node
 	 * @throws \InvalidArgumentException
-	 * @namespace Abyss\Template
 	 */
 	public function __construct($nodes = NULL) {
 		if($nodes !== NULL ){
@@ -54,7 +53,6 @@ class DOMNodeList implements iDOMNodeList {
 
 	/**
 	 * @see \Abyss\Template\iDOMNodeList::detachAllNodes()
-	 * @namespace Abyss\Template
 	 */
 	public function detachAllNodes() {
 		foreach($this->list as $ele) {
@@ -68,7 +66,6 @@ class DOMNodeList implements iDOMNodeList {
 
 	/**
 	 * @see \Abyss\Template\iDOMNodeList::sliceList()
-	 * @namespace Abyss\Template
 	 */
 	public function sliceList($lowerBound, $upperBound) {
 		$tmpList = array();
@@ -76,41 +73,77 @@ class DOMNodeList implements iDOMNodeList {
 		$_lowerBound = (integer) $lowerBound;
 		$_upperBound = (integer) $upperBound;
 		if($_lowerBound>$_upperBound) throw new \OutOfBoundsException("\$lowerBound ($lowerBound given) must be not greater than \$upperBound ($upperBound)");
-		if($_lowerBound<0 || $_upperBound>=$this->getLength()) throw new \OutOfBoundsException("Given bounds are not within the range <0,(getLength()-1)> ($lowerBound,$upperBound given)");
+		if($_lowerBound<0 || $_upperBound>=$this->length) throw new \OutOfBoundsException("Given bounds are not within the range <0,(getLength()-1)> ($lowerBound,$upperBound given)");
 
 		return new self(array_slice($this->list,$_lowerBound,(1 + $_upperBound - $_lowerBound)));
 	}
 
 	/**
 	 * @see \Abyss\Template\iDOMNodeList::getLength()
-	 * @namespace Abyss\Template
 	 */
 	public function getLength() {
 		return $this->length;
 	}
 
+	/**
+	 * @see \Abyss\Template\iDOMNodeList::prependNodeToList()
+	 */
 	public function prependNodeToList(iDOMNode $node) {
-
+		$this->length = array_unshift($this->list,$node);
+		return true;
 	}
 
+	/**
+	 * @see \Abyss\Template\iDOMNodeList::appendNodeToList()
+	 */
 	public function appendNodeToList(iDOMNode $node) {
-
+		$this->length = array_push($this->list,$node);
+		return true;
 	}
 
+	/**
+	 * @see \Abyss\Template\iDOMNodeList::insertNodeInList()
+	 */
 	public function insertNodeInList($pos,iDOMNode $node) {
-		// TODO Auto-generated method stub
+		$_pos = (integer) $pos;
+		if($_pos < 0 || $_pos > $this->length) throw new \OutOfBoundsException("Provided position \$pos ($pos given) is not a valid position.");
+
+		array_splice($this->list,$_pos,0,$node);
+		$this->length++;
+
+		return true;
 	}
 
+	/**
+	 * @see \Abyss\Template\iDOMNodeList::removeNodeFromList()
+	 */
 	public function removeNodeFromList($pos) {
-		// TODO Auto-generated method stub
+		$_pos = (integer) $pos;
+		//this covers also the case when there are no elements in the list
+		if($_pos < 0 || $_pos >= $this->length) throw new \OutOfBoundsException("Provided position \$pos ($pos given) is not a valid position.");
+
+		$node = $this->list[$_pos];
+		array_splice($this->list,$_pos,1);
+		$this->length--;
+
+		return $node;
 	}
 
+	/**
+	 * @see \Abyss\Template\iDOMNodeList::getNode()
+	 */
 	public function getNode($pos) {
-		// TODO Auto-generated method stub
+		$_pos = (integer) $pos;
+		if($_pos < 0 ||  $_pos >= $this->length) throw new \OutOfBoundsException("Provided position \$pos ($pos given) is not a valid position.");
+
+		return $this->list[$_pos];
 	}
 
+	/**
+	 * @see \Abyss\Template\iDOMNodeList::sortList()
+	 */
 	public function sortList($fnc) {
-		// TODO Auto-generated method stub
+		usort($this->list,$fnc);
 	}
 
 	/***************

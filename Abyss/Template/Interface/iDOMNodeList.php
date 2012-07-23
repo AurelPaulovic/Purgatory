@@ -29,7 +29,6 @@ interface iDOMNodeList extends \Iterator {
 	 * some nodes might be detached while others could be left attached
 	 *
 	 * @return boolean true, if the nodes were sucessfully detached, false if not
-	 * @namespace Abyss\Template
 	 */
 	public function detachAllNodes();
 
@@ -41,7 +40,6 @@ interface iDOMNodeList extends \Iterator {
 	 * @param integer $lowerBound lower index (zero based, inclusive)
 	 * @param integer $upperBound (zero based, inclusive)
 	 * @return \Abyss\Template\iDOMNodeList new list
-	 * @namespace Abyss\Template
 	 * @throws \OutOfBoundsException
 	 */
 	public function sliceList($lowerBound,$upperBound);
@@ -60,7 +58,6 @@ interface iDOMNodeList extends \Iterator {
 	 *
 	 * @param \Abyss\Template\iDOMNode $node
 	 * @return boolean true, if the node was successfully inserted to the list, false if not
-	 * @namespace Abyss\Template
 	 */
 	public function prependNodeToList(iDOMNode $node);
 
@@ -71,7 +68,6 @@ interface iDOMNodeList extends \Iterator {
 	 *
 	 * @param \Abyss\Template\iDOMNode $node
 	 * @return boolean true, if the node was successfully inserted to the list, false if not
-	 * @namespace Abyss\Template
 	 */
 	public function appendNodeToList(iDOMNode $node);
 
@@ -87,7 +83,6 @@ interface iDOMNodeList extends \Iterator {
 	 * @param integer $pos position in list (zero based, <0,getLength()>)
 	 * @param \Abyss\Template\iDOMNode $node new node
 	 * @return boolean true, if the node was cussessfully inserted to the list, false if not
-	 * @namespace Abyss\Template
 	 * @throws \OutOfBoundsException
 	 */
 	public function insertNodeInList($pos,iDOMNode $node);
@@ -99,7 +94,6 @@ interface iDOMNodeList extends \Iterator {
 	 *
 	 * @param integer $pos position of the node in list (zero based)
 	 * @return \Abyss\Template\iDOMNode the removed node
-	 * @namespace Abyss\Template
 	 * @throws \OutOfBoundsException
 	 */
 	public function removeNodeFromList($pos);
@@ -109,7 +103,6 @@ interface iDOMNodeList extends \Iterator {
 	 *
 	 * @param integer $pos position in list
 	 * @return \Abyss\Template\iDOMNode
-	 * @namespace Abyss\Template
 	 * @throws \OutOfBoundsException
 	 */
 	public function getNode($pos);
@@ -124,7 +117,6 @@ interface iDOMNodeList extends \Iterator {
 	 *
 	 * @param \Closure|callback $fnc comparsion function(\Abyss\Template\iDOMNode $node1,\Abyss\Template\iDOMNode $node2) returning integer
 	 * @return void
-	 * @namespace Abyss\Template
 	 */
 	public function sortList($fnc);
 }
