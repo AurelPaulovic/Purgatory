@@ -2,29 +2,47 @@
 namespace Abyss\Template;
 
 /**
- * TODO
+ * Requires the implementing object to provide \Iterator access to the Nodes in list, their sort, insertion and removal and an convinience detach function
  *
- * Objects implementing this interface are required to maintain order of its elements and allow duplicates (the same node can be listed multiple times)
+ * Objects implementing this interface are required to maintain the order of its elements and allow duplicates (the same node can be listed multiple times)
  *
- * @author APA
+ * @extends \Iterator
+ * @author Aurel Paulovic <aurel.paulovic@gmail.com>
  * @since 0.1
  * @version 0.1
  * @namespace Abyss\Template
+ * @copyright Copyright (c) 2012, Aurel Paulovic
+ * @license
  */
-interface iDOMNodeList {
+interface iDOMNodeList extends \Iterator {
 	/**
 	 * Detaches all nodes in list from the DOM
 	 *
-	 * @return Abyss\Template\iDOMNodeList $this
+	 * Convinience function for:
+	 * <pre>
+	 * foreach(iDOMNodeList as iDOMNode) {
+	 *     iDOMNode->detach();
+	 * }
+	 * </pre>
+	 *
+	 * If the nodes could be not detached, the function will return false and leave the nodes in incosistent state, i.e.:
+	 * some nodes might be detached while others could be left attached
+	 *
+	 * @return boolean true, if the nodes were sucessfully detached, false if not
+	 * @namespace Abyss\Template
 	 */
 	public function detachAllNodes();
 
 	/**
 	 * Returns a new list consisting of nodes in the slice defined by its lower and upper bound indexes
 	 *
+	 * The indexes must be within interval <0,(getLength()-1)>
+	 *
 	 * @param integer $lowerBound lower index (zero based, inclusive)
 	 * @param integer $upperBound (zero based, inclusive)
-	 * @return Abyss\Template\iDOMNodeList new list
+	 * @return \Abyss\Template\iDOMNodeList new list
+	 * @namespace Abyss\Template
+	 * @throws \OutOfBoundsException
 	 */
 	public function sliceList($lowerBound,$upperBound);
 
@@ -36,44 +54,77 @@ interface iDOMNodeList {
 	public function getLength();
 
 	/**
-	 * Inserts a node into the list at the $index
+	 * Prepends a Node to the list
 	 *
 	 * Does NOT insert the node into the DOM
 	 *
-	 * @param integer $idx index (zero based)
-	 * @param Abyss\Template\iDOMNode $node new node
-	 * @return Abyss\Template\iDOMNode inserted node \\TODO return the node or the list ?
+	 * @param \Abyss\Template\iDOMNode $node
+	 * @return boolean true, if the node was successfully inserted to the list, false if not
+	 * @namespace Abyss\Template
 	 */
-	public function insertNodeInList($idx,Abyss\Template\iDOMNode $node);
+	public function prependNodeToList(iDOMNode $node);
 
 	/**
-	 * Removes node on the $index from the list
+	 * Appends a Node to the list
+	 *
+	 * Does NOT insert the node into the DOM
+	 *
+	 * @param \Abyss\Template\iDOMNode $node
+	 * @return boolean true, if the node was successfully inserted to the list, false if not
+	 * @namespace Abyss\Template
+	 */
+	public function appendNodeToList(iDOMNode $node);
+
+	/**
+	 * Inserts a node into the list at the $pos
+	 *
+	 * The $pos must be from the interval <0,getLength()>. If the $pos is equal to the value
+	 * of getLength() ({@link \Abyss\Template\iDOMNodeList::getLength()}), the node will be
+	 * inserted at the end of the list.
+	 *
+	 * Does NOT insert the node into the DOM
+	 *
+	 * @param integer $pos position in list (zero based, <0,getLength()>)
+	 * @param \Abyss\Template\iDOMNode $node new node
+	 * @return boolean true, if the node was cussessfully inserted to the list, false if not
+	 * @namespace Abyss\Template
+	 * @throws \OutOfBoundsException
+	 */
+	public function insertNodeInList($pos,iDOMNode $node);
+
+	/**
+	 * Removes node on the $pos from the list
 	 *
 	 * Does NOT delete or remove the node from its DOM
 	 *
-	 * @param integer $idx index of the node (zero based)
-	 * @return Abyss\Template\iDOMNode removed node \\TODO return the node or the list ?
+	 * @param integer $pos position of the node in list (zero based)
+	 * @return \Abyss\Template\iDOMNode the removed node
+	 * @namespace Abyss\Template
+	 * @throws \OutOfBoundsException
 	 */
-	public function removeNodeFromList($idx);
+	public function removeNodeFromList($pos);
 
 	/**
-	 * Returns the node at the $index
+	 * Returns the node at the $pos
 	 *
-	 * @param integer $idx index
-	 * @return Abyss\Template\iDOMNode
+	 * @param integer $pos position in list
+	 * @return \Abyss\Template\iDOMNode
+	 * @namespace Abyss\Template
+	 * @throws \OutOfBoundsException
 	 */
-	public function getNode($idx);
+	public function getNode($pos);
 
 	/**
 	 * Sorts the Nodes in list
 	 *
 	 * <p>
-	 * The comparsion function has to take two compared Abyss\Template\iDOMNode parameters (the compared nodes) and
+	 * The comparsion function has to take two compared iDOMNode parameters (the compared nodes) and
 	 * must return an integer less than, equal to, or greater than zero if the first argument is considered to be respectively less than, equal to, or greater than the second.
 	 * </p>
 	 *
-	 * @param \Closure|callback $fnc comparsion function(Abyss\Template\iDOMNode $node1,Abyss\Template\iDOMNode $node2) returning integer
+	 * @param \Closure|callback $fnc comparsion function(\Abyss\Template\iDOMNode $node1,\Abyss\Template\iDOMNode $node2) returning integer
 	 * @return void
+	 * @namespace Abyss\Template
 	 */
 	public function sortList($fnc);
 }

@@ -4,10 +4,16 @@ use \Abyss\DataModel\Column as Col;
 
 /**
  *
- * @author APA
- *
  * TODO: change doc language
  *
+ *
+ *
+ * @author Aurel Paulovic <aurel.paulovic@gmail.com>
+ * @since 0.1
+ * @version 0.1
+ * @namespace Abyss\DataModel\Object
+ * @copyright Copyright (c) 2012, Aurel Paulovic
+ * @license
  */
 abstract class DataObject implements \ArrayAccess, \IteratorAggregate, iClonable {
 

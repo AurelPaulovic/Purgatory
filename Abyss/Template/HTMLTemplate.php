@@ -1,6 +1,15 @@
 <?php
 namespace Abyss\Template;
 
+/**
+ *
+ * @author Aurel Paulovic <aurel.paulovic@gmail.com>
+ * @since 0.1
+ * @version 0.1
+ * @namespace Abyss\Template
+ * @copyright Copyright (c) 2012, Aurel Paulovic
+ * @license
+ */
 class HTMLTemplate extends Template {
 	private function __construct($file=null,$string=null) {
 		parent::__construct('1.0','UTF-8');

@@ -4,9 +4,12 @@ namespace Abyss\Template;
 /**
  * Requires the implementing object to support querying by CSS and XPath selectors
  *
- * @author APA
+ * @author Aurel Paulovic <aurel.paulovic@gmail.com>
  * @since 0.1
  * @version 0.1
+ * @namespace Abyss\Template
+ * @copyright Copyright (c) 2012, Aurel Paulovic
+ * @license
  */
 interface iQueryable {
 	/**
