@@ -2,7 +2,7 @@
 namespace Abyss\Template;
 
 /**
- * Requires the implementing object to provide \Iterator access to the Nodes in list, their sort, insertion and removal and an convinience detach function
+ * Requires the implementing object to provide \Iterator access to the Nodes in list, their sort, insertion and removal and an convenience detach function
  *
  * Objects implementing this interface are required to maintain the order of its elements and allow duplicates (the same node can be listed multiple times)
  *
@@ -18,7 +18,7 @@ interface iDOMNodeList extends \Iterator {
 	/**
 	 * Detaches all nodes in list from the DOM
 	 *
-	 * Convinience function for:
+	 * Convenience function for:
 	 * <pre>
 	 * foreach(iDOMNodeList as iDOMNode) {
 	 *     iDOMNode->detach();
