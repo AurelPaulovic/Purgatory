@@ -306,80 +306,113 @@ class DOMNodeListTest extends \PHPUnit_Framework_TestCase {
 	 * Tests DOMNodeList->removeNodeFromList()
 	 */
 	public function testRemoveNodeFromList() {
-		// TODO Auto-generated DOMNodeListTest->testRemoveNodeFromList()
-		$this->markTestIncomplete("removeNodeFromList test not implemented");
+		$ele1 = (new DOMNodeMock())->setId(1);
+		$ele2 = (new DOMNodeMock())->setId(2);
+		$ele3 = (new DOMNodeMock())->setId(3);
 
-		$this->DOMNodeList->removeNodeFromList(/* parameters */);
+		$dnl = new DOMNodeList(array($ele1,$ele2,$ele3));
+		$this->assertEquals(3,$dnl->getLength());
+
+		$this->assertSame($ele2,$dnl->removeNodeFromList(1));
+		$this->assertEquals(2,$dnl->getLength());
+
+		$this->assertSame($ele3,$dnl->removeNodeFromList(1));
+		$this->assertEquals(1,$dnl->getLength());
+
+		$this->assertSame($ele1,$dnl->removeNodeFromList(0));
+		$this->assertEquals(0,$dnl->getLength());
+	}
+
+	public function testRemoveNodeFromListException() {
+		$ele = new DOMNodeMock();
+		$dnl = new DOMNodeList($ele);
+		$this->assertEquals(1,$dnl->getLength());
+
+		try {
+			$dnl->removeNodeFromList(1);
+			$this->fail("expected OutOfBoundException");
+		} catch(\OutOfBoundsException $e) {}
 	}
 
 	/**
 	 * Tests DOMNodeList->getNode()
 	 */
 	public function testGetNode() {
-		// TODO Auto-generated DOMNodeListTest->testGetNode()
-		$this->markTestIncomplete("getNode test not implemented");
+		$ele1 = (new DOMNodeMock())->setId(1);
+		$ele2 = (new DOMNodeMock())->setId(2);
+		$ele3 = (new DOMNodeMock())->setId(3);
 
-		$this->DOMNodeList->getNode(/* parameters */);
+		$dnl = new DOMNodeList(array($ele1,$ele2,$ele3));
+		$this->assertEquals(3,$dnl->getLength());
+
+		$this->assertSame($ele1,$dnl->getNode(0));
+		$this->assertSame($ele2,$dnl->getNode(1));
+		$this->assertSame($ele3,$dnl->getNode(2));
+		$this->assertNotSame($ele3,$dnl->getNode(1));
+	}
+
+	public function testGetNodeException() {
+		$ele1 = (new DOMNodeMock())->setId(1);
+		$ele2 = (new DOMNodeMock())->setId(2);
+		$ele3 = (new DOMNodeMock())->setId(3);
+
+		$dnl = new DOMNodeList(array($ele1,$ele2,$ele3));
+		$this->assertEquals(3,$dnl->getLength());
+
+		try {
+			$dnl->getNode(-1);
+			$this->fail("Expected OutOfBoundsException");
+		} catch(\OutOfBoundsException $e) {}
+
+		try {
+			$dnl->getNode(3);
+			$this->fail("Expected OutOfBoundsException");
+		} catch(\OutOfBoundsException $e) {}
 	}
 
 	/**
 	 * Tests DOMNodeList->sortList()
 	 */
 	public function testSortList() {
-		// TODO Auto-generated DOMNodeListTest->testSortList()
-		$this->markTestIncomplete("sortList test not implemented");
+		$ele1 = (new DOMNodeMock())->setId(1);
+		$ele2 = (new DOMNodeMock())->setId(2);
+		$ele3 = (new DOMNodeMock())->setId(3);
+		$ele4 = (new DOMNodeMock())->setId(4);
 
-		$this->DOMNodeList->sortList(/* parameters */);
+		$allEle = array($ele1,$ele2,$ele3,$ele4);
+
+		$dnl = new DOMNodeList(array($ele2,$ele4,$ele3,$ele1));
+		$dnl->sortList(function($e1,$e2) {
+			if($e1->id===$e2->id) return 0;
+			return ($e1->id < $e2->id ? -1 : 1);
+		});
+
+		$pos = 0;
+		foreach($dnl as $_key => $_ele) {
+			$this->assertEquals($pos,$_key);
+			$this->assertSame($allEle[$pos],$_ele);
+			$pos++;
+		}
 	}
 
-	/**
-	 * Tests DOMNodeList->current()
-	 */
-	public function testCurrent() {
-		// TODO Auto-generated DOMNodeListTest->testCurrent()
-		$this->markTestIncomplete("current test not implemented");
+	public function testTraversableInterface() {
+		$ele1 = (new DOMNodeMock())->setId(1);
+		$ele2 = (new DOMNodeMock())->setId(2);
+		$ele3 = (new DOMNodeMock())->setId(3);
+		$ele4 = (new DOMNodeMock())->setId(4);
 
-		$this->DOMNodeList->current(/* parameters */);
-	}
+		$allEle = array($ele1,$ele2,$ele3,$ele4);
 
-	/**
-	 * Tests DOMNodeList->key()
-	 */
-	public function testKey() {
-		// TODO Auto-generated DOMNodeListTest->testKey()
-		$this->markTestIncomplete("key test not implemented");
+		$dnl = new DOMNodeList($allEle);
+		$this->assertEquals(4,$dnl->getLength());
 
-		$this->DOMNodeList->key(/* parameters */);
-	}
+		$pos = 0;
+		foreach($dnl as $_key => $_ele) {
+			$this->assertEquals($pos,$_key);
+			$this->assertSame($allEle[$pos],$_ele);
 
-	/**
-	 * Tests DOMNodeList->next()
-	 */
-	public function testNext() {
-		// TODO Auto-generated DOMNodeListTest->testNext()
-		$this->markTestIncomplete("next test not implemented");
-
-		$this->DOMNodeList->next(/* parameters */);
-	}
-
-	/**
-	 * Tests DOMNodeList->rewind()
-	 */
-	public function testRewind() {
-		// TODO Auto-generated DOMNodeListTest->testRewind()
-		$this->markTestIncomplete("rewind test not implemented");
-
-		$this->DOMNodeList->rewind(/* parameters */);
-	}
-
-	/**
-	 * Tests DOMNodeList->valid()
-	 */
-	public function testValid() {
-		// TODO Auto-generated DOMNodeListTest->testValid()
-		$this->markTestIncomplete("valid test not implemented");
-
-		$this->DOMNodeList->valid(/* parameters */);
+			$pos++;
+		}
 	}
 }
 
