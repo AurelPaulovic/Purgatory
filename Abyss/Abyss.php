@@ -56,20 +56,23 @@ final class Abyss {
 	 * @return void
 	 */
 	private function autoloadHandler($name) {
+		static $root = NULL;
+		if($root===NULL) $root = realpath('.') . DIRECTORY_SEPARATOR;
+
 		$parts = explode('\\',$name);
 		if($parts[0]==='Abyss' && count($parts)>1) {
-			$file = array_pop($parts).".php";
-			$path = implode(DIRECTORY_SEPARATOR,$parts);
+			$file = array_pop($parts) . '.php';
+			$path = $root . implode(DIRECTORY_SEPARATOR,$parts) . DIRECTORY_SEPARATOR;
 
 			$locations = array(
-				$path . DIRECTORY_SEPARATOR . $file,
-				$path . DIRECTORY_SEPARATOR . 'Trait' . DIRECTORY_SEPARATOR . $file,
-				$path . DIRECTORY_SEPARATOR . 'Interface' . DIRECTORY_SEPARATOR . $file,
+				$file,
+				'Interface' . DIRECTORY_SEPARATOR . $file,
+				'Trait' . DIRECTORY_SEPARATOR . $file
 			);
 
-			foreach($locations as &$loc) {
-				if(file_exists($loc)) {
-					require($loc);
+			foreach($locations as $loc) {
+				if(file_exists($path . $loc)) {
+					require($path . $loc);
 					return;
 				}
 			}
