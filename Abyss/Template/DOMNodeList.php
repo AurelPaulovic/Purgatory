@@ -74,8 +74,8 @@ class DOMNodeList implements iDOMNodeList {
 
 		$_lowerBound = (integer) $lowerBound;
 		$_upperBound = (integer) $upperBound;
-		if($_lowerBound>$_upperBound) throw new \OutOfBoundsException("\$lowerBound ($lowerBound given) must be not greater than \$upperBound ($upperBound)");
-		if($_lowerBound<0 || $_upperBound>=$this->length) throw new \OutOfBoundsException("Given bounds are not within the range <0,(getLength()-1)> ($lowerBound,$upperBound given)");
+		if($_lowerBound > $_upperBound) throw new \OutOfBoundsException("\$lowerBound ($lowerBound given) must be not greater than \$upperBound ($upperBound)");
+		if($_lowerBound < 0 || $_upperBound >= $this->length) throw new \OutOfBoundsException("Given bounds are not within the range <0,(getLength()-1)> ($lowerBound,$upperBound given)");
 
 		return new self(array_slice($this->list,$_lowerBound,(1 + $_upperBound - $_lowerBound)));
 	}
@@ -194,7 +194,7 @@ class DOMNodeList implements iDOMNodeList {
 	 * @return void
 	 */
 	public function rewind() {
-		if($this->length===0) $this->p_position = NULL;
+		if($this->length === 0) $this->p_position = NULL;
 		else $this->p_position = 0;
 	}
 
