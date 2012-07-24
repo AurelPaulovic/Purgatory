@@ -3,7 +3,7 @@ use Abyss\Templates\XHTMLTemplate;
 
 ob_start();
 
-/* require_once("Abyss".DIRECTORY_SEPARATOR."Utilities".DIRECTORY_SEPARATOR."Timer.php");
+/* require_once("Abyss".DIRECTORY_SEPARATOR."Utility".DIRECTORY_SEPARATOR."Timer.php");
 Abyss\Utility\Timer::start('index'); */
 
 require_once("Abyss".DIRECTORY_SEPARATOR."Abyss.php");

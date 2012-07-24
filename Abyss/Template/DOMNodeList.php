@@ -62,6 +62,8 @@ class DOMNodeList implements iDOMNodeList {
 				return false;
 			}
 		}
+
+		return true;
 	}
 
 	/**
@@ -108,7 +110,7 @@ class DOMNodeList implements iDOMNodeList {
 		$_pos = (integer) $pos;
 		if($_pos < 0 || $_pos > $this->length) throw new \OutOfBoundsException("Provided position \$pos ($pos given) is not a valid position.");
 
-		array_splice($this->list,$_pos,0,$node);
+		array_splice($this->list,$_pos,0,array($node));
 		$this->length++;
 
 		return true;
