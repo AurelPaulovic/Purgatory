@@ -1,16 +1,27 @@
 <?php
-class TestNode implements \Abyss\Template\iDOMNode {
-	/* (non-PHPdoc)
-	 * @see \Abyss\Template\iDOMNode::detach()
-	 */public function detach() {
-		// TODO Auto-generated method stub
-		}
+
+$dom = new \DOMDocument('1.0','UTF-8');
+$dom->loadHTMLFile("fw_test/tpl/testPage.xhtml");
+
+$xpath = new \DOMXPath($dom);
+
+$lastEle = null;
+foreach($xpath->query("//span") as $ele) {
+	/* @var $ele \DOMElement */
+	echo $ele->getAttribute('id'),"<br />";
+	$lastEle = $ele;
 }
 
-$ele = new TestNode();
-$list = new Abyss\Template\DOMNodeList(array($ele));
-$list2 = new Abyss\Template\DOMNodeList($list);
+echo "-------------<br />";
 
-/*$tpl = Abyss\Template\XHTMLTemplate::loadFile("fw_test/tpl/testPage.xhtml");
-$tpl->process();
-echo $tpl->save(); */
+$ele = $dom->createElement('span','newly created span');
+$ele->setAttribute('id', 'gender');
+$lastEle->appendChild($ele);
+
+foreach($xpath->query("//*[@id='gender']") as $ele) {
+	/* @var $ele \DOMElement */
+	echo $ele->getAttribute('id'),"<br />";
+}
+
+echo "-------------<br />";
+echo $dom->saveHTML();

@@ -163,7 +163,7 @@ class DOMNodeList implements iDOMNodeList {
 	 * @implements \Iterator::current()
 	 * @return Abyss\Template\iDOMNode current Node
 	 */
-	public function current () {
+	public function current() {
 		return ($this->p_position === NULL ? NULL : $this->list[$this->p_position]);
 	}
 
