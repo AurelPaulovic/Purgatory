@@ -28,9 +28,13 @@ class DOM implements iQueryable {
 	 */
 	public function css($query) {
 		$xquery = $this->css2xpath($query);
-		if($xquery === NULL) return new DOMNodeList();
+		if($xquery !== NULL) {
+			try { //we do this just to get a proper source of the exception, the does not need to know, that we do CSS to XPath translation
+				return $this->xp($xquery);
+			} catch(\Exception $e) {}
+		}
 
-		return $this->xp($xquery);
+		throw new \InvalidArgumentException("The query '$query' is invalid.");
 	}
 
 	/**
@@ -40,7 +44,7 @@ class DOM implements iQueryable {
 		if($this->xpath === NULL) $this->xpath = new \DOMXPath($this->dom);
 
 		$tmpList = $this->xpath->query($query);
-		if($tmpList === false) return new DOMNodeList();
+		if($tmpList === false) throw new \InvalidArgumentException("The query '$query' is invalid.");
 		else new DOMNodeList($tmpList);
 	}
 

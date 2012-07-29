@@ -17,6 +17,7 @@ interface iQueryable {
 	 *
 	 * @param string|Array $query single CSS query or an array of queries
 	 * @return Abyss\Template\iDOMNodeList
+	 * @throws \InvalidArgumentException invalid CSS query syntax
 	 */
 	public function css($query);
 
@@ -25,6 +26,7 @@ interface iQueryable {
 	 *
 	 * @param string|Array $query single XPath query or an array of queries
 	 * @return Abyss\Template\iDOMNodeList
+	 * @throws \InvalidArgumentException invalid XPath syntax
 	 */
 	public function xp($query);
 
