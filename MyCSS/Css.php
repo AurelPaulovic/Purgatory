@@ -12,10 +12,6 @@
  * @license
  */
 class Css {
-	const STATE_EMPTY = 1;
-	const STATE_WHITESPACE = 2;
-	const STATE_CLASS = 3;
-
 	/**
 	 * TODO maybe do something about case
 	 *
@@ -24,6 +20,10 @@ class Css {
 	 * @return Ambigous <string, unknown>
 	 */
 	public static function process($query) {
+		/*
+		 * This is a long method, but I don't want to split it for performance reasons, bear with me
+		 */
+
 		$attrStack = array();
 		$result = "descendant-or-self::";
 		$element = '';
@@ -180,80 +180,6 @@ class Css {
 		if(!empty($attrStack)) {
 			$result .= '[' . implode(' and ',$attrStack) . ']';
 			$attrStack = array();
-		}
-
-		return $result;
-	}
-
-	public static function processOld($query) {
-		$result = "//";
-		$state = self::STATE_EMPTY;
-
-		$qs = strtolower($query) . ' ';
-
-		for($i=0,$len=strlen($qs);$i<$len;$i++) {
-			$char = $qs[$i];
-
-			if($char==='.') {
-				//class
-			}
-
-			if($char==='[') {
-				//attribute
-				$att = '';
-				while(false) ;
-			}
-
-			if($char===':') {
-				$i++;
-				//pseudo class or pseudo element
-				if($qs[$i]===':') {
-					//pseudo element - not supported
-					$pseudoEle = '::';
-					while(('a' <= ($char = $qs[++$i]) && $char <= 'z') || ($char>=0 && $char <=9) || ($char==='-')) $pseudoEle.=$char;
-
-					throw new \InvalidArgumentException("Not supported selector - pseudo element '$pseudoEle'");
-				}
-
-				//pseudo class
-			}
-
-
-			continue;
-
-			//-- old
-
-			if($char==='.') {
-				$tok = '';
-				while(($i+1)<$len && 'a' <= $qs[$i+1] && $qs[$i+1] <= 'z') $tok.=$qs[++$i];
-
-				$result.='[contains(concat(\' \', normalize-space(@class), \' \'), \' ' . $tok . ' \')]';
-				continue;
-			}
-
-			if($char>='a' && $char<='z') {
-				$tok = $char;
-				while(($i+1)<$len && 'a' <= $qs[$i+1] && $qs[$i+1] <= 'z') $tok.=$qs[++$i];
-
-				$result.=$tok;
-				continue;
-			}
-
-			if($char===' ') {
-				$what = '//';
-				while((++$i)<$len) {
-					$char = $qs[$i];
-
-					if($char==='>') $what = '/';
-					elseif($char===' ');
-					else {
-						$i--;
-						break;
-					}
-				}
-
-				$result.=$what;
-			}
 		}
 
 		return $result;
