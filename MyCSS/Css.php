@@ -27,6 +27,7 @@ class Css {
 		$attrStack = array();
 		$result = "descendant-or-self::";
 		$element = '';
+		$hasPosition = false;
 
 		$split = preg_split("/(?:\s*)([\+\>\~])(?:\s*)	(?# combinators, other than 'descendant' )
 						|(\s)(?:\s*)					(?# any whitespace characters can separate selectors - we catch only the first, dump the rest -> we need to have atleast one to recognize descendant combinator )
@@ -99,8 +100,10 @@ class Css {
 				$pclass = $split[++$i];
 				if($pclass === 'first-child') {
 					$attrStack[] = '(position() = 1)';
+					$hasPosition = true;
 				} elseif($pclass === 'last-child') {
 					$attrStack[] = '(position() = last())';
+					$hasPosition = true;
 				} else {
 					throw new \InvalidArgumentException("Unsupported selector - pseudo-class '$pclass'");
 				}
@@ -119,7 +122,15 @@ class Css {
 				//new combinator means the end of attributes/pseudo-classes, we will flush the attribute stack into result
 				// however, before we flush attributes, we need to check, if we got an simple element selector, if not, let's use a wildcard
 				if($element === null) $result .= '*';
-				else $element = null;
+				else  {
+					if($hasPosition === true) {
+						$hasPosition = false;
+						$attrStack[] = "(name() = '$element')";
+						$result .= '*';
+					} else $result .= $element;
+
+					$element = null;
+				}
 
 				if(!empty($attrStack)) {
 					$result .= '[' . implode(' and ',$attrStack) . ']';
@@ -129,6 +140,7 @@ class Css {
 				if($tok === '+') { //adjacent sibling combinator
 					$result .= '/following-sibling::';
 					$attrStack[] = '(position() = 1)';
+					$hasPosition = true;
 					continue;
 				}
 
@@ -149,12 +161,21 @@ class Css {
 			}
 
 			//nothing matched, means that we got a simple element selector
-			$result .= $element = $tok;
+			//save it and use later, when we now if we are matching some position (if we use position, we need to use element name via name() function)
+			$element = $tok;
 		}
 
 		//flush nonterminated stuff (copy/paste from loop)
 		if($element === null) $result .= '*';
-		else $element = null;
+		else  {
+			if($hasPosition === true) {
+				$hasPosition = false;
+				$attrStack[] = "(name() = '$element')";
+				$result .= '*';
+			} else $result .= $element;
+
+			$element = null;
+		}
 
 		if(!empty($attrStack)) {
 			$result .= '[' . implode(' and ',$attrStack) . ']';
