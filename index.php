@@ -28,10 +28,10 @@ spl_autoload_register(function ($class) {
 	}
 });
 
-$query = 'div + div *    .test a[attr|=\'sk\'][attr=val] i b.nice[attr~=val]:last-child > span[attr="val > \' val2"][attr="val \" val2"]';
+$query = 'div + div *    .test a[attr|=\'sk\'][attr=val] i b.nice[attr*=val]:last-child > span[attr="val > \' val2"][attr="val \" val2"]';
 echo "<br />query: ",$query,"<br /><br />";
 
-use Symfony\Component\CssSelector\CssSelector;
+/* use Symfony\Component\CssSelector\CssSelector;
 CssSelector::toXPath($query);
 
 Abyss\Utility\Timer::start('css');
@@ -40,7 +40,7 @@ Abyss\Utility\Timer::printTime('css','end');
 
 Abyss\Utility\Timer::start('css');
 print CssSelector::toXPath($query);
-Abyss\Utility\Timer::printTime('css','end');
+Abyss\Utility\Timer::printTime('css','end'); */
 
 require "MyCSS/Css.php";
 Css::process($query);

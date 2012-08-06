@@ -16,6 +16,13 @@ class Css {
 	const STATE_WHITESPACE = 2;
 	const STATE_CLASS = 3;
 
+	/**
+	 * TODO maybe do something about case
+	 *
+	 * @param unknown_type $query
+	 * @throws \InvalidArgumentException
+	 * @return Ambigous <string, unknown>
+	 */
 	public static function process($query) {
 		$attrStack = array();
 		$result = "descendant-or-self::";
@@ -34,31 +41,65 @@ class Css {
 						|:								(?# pseudo class )
 						|::								(?# pseudo element )
 						|\((\d*)n\s*[+-]\s*(\d*)\)		(?# pseudo class expression )
-						)/sxu",$query,-1,PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+						)/xu",$query,-1,PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 
 		//var_dump($split);
 
 		for($i=0,$len=count($split);$i<$len;$i++) {
 			$tok = $split[$i];
 
-			if($tok==='.') { //class selector
-				$attrStack[]='(contains(concat(\' \', normalize-space(@class), \' \'), \' ' . $split[++$i] . ' \'))';
+			if($tok === '.') { //class selector
+				$attrStack[] = "(contains(concat(' ', normalize-space(@class), ' '), ' {$split[++$i]} '))";
 				continue;
 			}
 
-			if($tok==='[') { //attribute selector
-
+			if($tok === '#') { //ID selector
+				$attrStack[] = "(@id='{$split[++$i]}')";
+				continue;
 			}
 
-			if($tok===':') { //pseudo class TODO
+			if($tok === '[') { //attribute selector
+				$attr = $split[++$i];
+				$op = $split[++$i];
+				$quot = $split[++$i];
+
+				if($quot === '"' || $quot === '\'') {
+					$val = $split[++$i];
+				} else {
+					$val = $quot;
+				}
+
+				if($split[++$i] !== ']') {
+					if($quot === $val) $quot = '';
+					throw new \InvalidArgumentException("Invalid attribute syntax '{$attr}{$op}{$quot}{$val}{$quot}{$split[$i]}'");
+				}
+
+				if($op === '=') {
+					$attrStack[] = "(@$attr='$val')";
+				} elseif($op === '~=') {
+					$attrStack[] = "(contains(concat(' ', normalize-space(@$attr), ' '), ' {$val} '))";
+				} elseif($op === '^=') {
+					$attrStack[] = "(starts-with(@$attr,'$val'))";
+				} elseif($op === '*=') {
+					$attrStack[] = "(contains(@$attr,'$val'))";
+				} elseif($op === '$=') {
+					$attrStack[] = "(substring(@$attr, string-length(@$attr)-" . (mb_strlen($val) - 1) . ") = '$val')";
+				} else { // |=
+					$attrStack[] = "((@$attr='$val') or starts-with(@$attr,'{$val}-'))";
+				}
+
+				continue;
+			}
+
+			if($tok === ':') { //pseudo class TODO
 				//root only-child first-of-type last-of-type  only-of-type empty
 				//nth-child nth-last-child nth-of-type nth-last-of-type
 				//lang enabled disabled checked not
 
 				$pclass = $split[++$i];
-				if($pclass==='first-child') {
+				if($pclass === 'first-child') {
 					$attrStack[] = '(position() = 1)';
-				} elseif($pclass==='last-child') {
+				} elseif($pclass === 'last-child') {
 					$attrStack[] = '(position() = last())';
 				} else {
 					throw new \InvalidArgumentException("Unsupported selector - pseudo-class '$pclass'");
@@ -66,7 +107,7 @@ class Css {
 				continue;
 			}
 
-			if($tok==='::') { //pseudo element
+			if($tok === '::') { //pseudo element
 				throw new \InvalidArgumentException("Unsupported selector - pseudo-element '::{$split[++$i]}'");
 			}
 
@@ -74,41 +115,50 @@ class Css {
 			 * combinators and new elements
 			 */
 
-			if($tok===' ' || $tok==='>' || $tok==='+' || $tok==='~') {
+			if($tok === ' ' || $tok === '>' || $tok === '+' || $tok === '~') {
 				//new combinator means the end of attributes/pseudo-classes, we will flush the attribute stack into result
 				// however, before we flush attributes, we need to check, if we got an simple element selector, if not, let's use a wildcard
-				if($element===null) $result.='*';
-				else $element=null;
+				if($element === null) $result .= '*';
+				else $element = null;
 
 				if(!empty($attrStack)) {
-					$result.= '[' . implode(' and ',$attrStack) . ']';
+					$result .= '[' . implode(' and ',$attrStack) . ']';
 					$attrStack = array();
 				}
 
-				if($tok==='+') { //adjacent sibling combinator
-					$result.='/following-sibling::';
+				if($tok === '+') { //adjacent sibling combinator
+					$result .= '/following-sibling::';
 					$attrStack[] = '(position() = 1)';
 					continue;
 				}
 
-				if($tok==='>') { //child combinator
-					$result.='/';
+				if($tok === '>') { //child combinator
+					$result .= '/';
 					continue;
 				}
 
-				if($tok==='~') { //general sibling combinator
-					$result.='/following-sibling::';
+				if($tok === '~') { //general sibling combinator
+					$result .= '/following-sibling::';
 					continue;
 				}
 
-				if($tok===' ') { //descendant combinator
-					$result.='/descendant::';
+				if($tok === ' ') { //descendant combinator
+					$result .= '/descendant::';
 					continue;
 				}
 			}
 
 			//nothing matched, means that we got a simple element selector
-			$result.=$element=$tok;
+			$result .= $element = $tok;
+		}
+
+		//flush nonterminated stuff (copy/paste from loop)
+		if($element === null) $result .= '*';
+		else $element = null;
+
+		if(!empty($attrStack)) {
+			$result .= '[' . implode(' and ',$attrStack) . ']';
+			$attrStack = array();
 		}
 
 		return $result;
