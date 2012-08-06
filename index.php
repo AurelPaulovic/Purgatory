@@ -28,10 +28,10 @@ spl_autoload_register(function ($class) {
 	}
 });
 
-$query = 'div a[attr|=\'sk\'][attr=val] i:nth-last-of-type(2n +5) b.nice[attr~=val] > span[attr="val \' val2"][attr="val \" val2"]';
+$query = 'div + div *    .test a[attr|=\'sk\'][attr=val] i b.nice[attr~=val]:last-child > span[attr="val > \' val2"][attr="val \" val2"]';
 echo "<br />query: ",$query,"<br /><br />";
 
-/* use Symfony\Component\CssSelector\CssSelector;
+use Symfony\Component\CssSelector\CssSelector;
 CssSelector::toXPath($query);
 
 Abyss\Utility\Timer::start('css');
@@ -42,27 +42,16 @@ Abyss\Utility\Timer::start('css');
 print CssSelector::toXPath($query);
 Abyss\Utility\Timer::printTime('css','end');
 
-require 'Zend/Css2XPath.php';
-
-Zend\Dom\Css2Xpath::transform($query);
-Abyss\Utility\Timer::start('css');
-print Zend\Dom\Css2Xpath::transform($query);
-Abyss\Utility\Timer::printTime('css','end');
-
-Abyss\Utility\Timer::start('css');
-print Zend\Dom\Css2Xpath::transform($query);
-Abyss\Utility\Timer::printTime('css','end'); */
-
 require "MyCSS/Css.php";
 Css::process($query);
 
-/* Abyss\Utility\Timer::start('css');
+Abyss\Utility\Timer::start('css');
 print Css::process($query);
 Abyss\Utility\Timer::printTime('css','end');
 
 Abyss\Utility\Timer::start('css');
 print Css::process($query);
-Abyss\Utility\Timer::printTime('css','end'); */
+Abyss\Utility\Timer::printTime('css','end');
 
 
 ?>
