@@ -73,10 +73,11 @@ final class Abyss {
 	 */
 	private function autoloadHandler($name) {
 		static $root = NULL;
-		if($root===NULL) $root = realpath('.') . DIRECTORY_SEPARATOR;
+		if($root===NULL) $root = __DIR__ . DIRECTORY_SEPARATOR;
 
 		$parts = explode('\\',$name);
 		if($parts[0]==='Abyss' && count($parts)>1) {
+			array_shift($parts);
 			$file = array_pop($parts) . '.php';
 			$path = $root . implode(DIRECTORY_SEPARATOR,$parts) . DIRECTORY_SEPARATOR;
 
