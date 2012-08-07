@@ -161,7 +161,13 @@ class Css2XPath {
 			 * combinators and new elements
 			 */
 			if($tok === ' ' || $tok === '>' || $tok === '+' || $tok === '~' || ord($tok) === $nl) {
-				//new combinator means the end of attributes/pseudo-classes, we will flush the attribute stack into result
+				/* The ord($tok) === $nl, where $nl = ord(PHP_EOL) matches a newline
+				 * Since in our preg_split, we take only the first whitespace character, this can be either \r (in the case of \r\n)
+				 * or \n (in the case of \n), depending on the OS the script is running on. Therefore, we need to check against the
+				 * first char in PHP_EOL, to find a newline (or what is left of it after preg_split)
+				 */
+
+				// new combinator means the end of attributes/pseudo-classes, we will flush the attribute stack into result
 				// however, before we flush attributes, we need to check, if we got an simple element selector, if not, let's use a wildcard
 				if($element === null) $result .= '*';
 				else  {
