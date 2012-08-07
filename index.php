@@ -1,25 +1,19 @@
 <?php
-use Zend\Dom\Css2Xpath;
-
-use Abyss\Templates\XHTMLTemplate;
-
 ob_start();
 
 require_once("Abyss".DIRECTORY_SEPARATOR."Utility".DIRECTORY_SEPARATOR."Timer.php");
-/* Abyss\Utility\Timer::start('index'); */
+require_once("Abyss".DIRECTORY_SEPARATOR."Abyss.php");
 
-//require_once("Abyss".DIRECTORY_SEPARATOR."Abyss.php");
-/* Abyss\Utility\Timer::printTime('index',"before init"); */
-
-/* $abyss = Abyss\Abyss::create();
-$abyss->init(); */
+$abyss = Abyss\Abyss::create();
+$abyss->init();
 
 
-//include "fw_test/simple_tpl.php";
+$query = 'div + div *    .test a[attr|=\'sk\'][attr=val] i b.nice[attr*=val]:last-child > span[attr="val > \' val2"][attr="val \" val2"]';
+$query = "ul > li span.name";
 
-/* Abyss\Utility\Timer::printTime('index','end'); */
+echo "<br />query: ",$query,"<br /><br />";
 
-
+/*
 spl_autoload_register(function ($class) {
 	if (0 === strpos(ltrim($class, '/'), 'Symfony\Component\CssSelector')) {
 		if (file_exists($file = __DIR__.'/'.substr(str_replace('\\', '/', $class), 0).'.php')) {
@@ -27,31 +21,27 @@ spl_autoload_register(function ($class) {
 		}
 	}
 });
-
-$query = 'div + div *    .test a[attr|=\'sk\'][attr=val] i b.nice[attr*=val]:last-child > span[attr="val > \' val2"][attr="val \" val2"]';
-echo "<br />query: ",$query,"<br /><br />";
-
-/* use Symfony\Component\CssSelector\CssSelector;
+use Symfony\Component\CssSelector\CssSelector;
 CssSelector::toXPath($query);
 
 Abyss\Utility\Timer::start('css');
 print CssSelector::toXPath($query);
-Abyss\Utility\Timer::printTime('css','end');
+Abyss\Utility\Timer::printTime('css','Symfony');
 
 Abyss\Utility\Timer::start('css');
 print CssSelector::toXPath($query);
-Abyss\Utility\Timer::printTime('css','end'); */
+Abyss\Utility\Timer::printTime('css','Symfony');
+ */
 
-require "MyCSS/Css.php";
-Css::process($query);
-
-Abyss\Utility\Timer::start('css');
-print Css::process($query);
-Abyss\Utility\Timer::printTime('css','end');
+Abyss\Utility\Css2XPath::process($query);
 
 Abyss\Utility\Timer::start('css');
-print Css::process($query);
-Abyss\Utility\Timer::printTime('css','end');
+print Abyss\Utility\Css2XPath::process($query);
+Abyss\Utility\Timer::printTime('css','Abyss');
+
+Abyss\Utility\Timer::start('css');
+print Abyss\Utility\Css2XPath::process($query);
+Abyss\Utility\Timer::printTime('css','Abyss');
 
 
 ?>
