@@ -68,6 +68,7 @@ class Css2XPath {
 		$result = $leadAxis . '::';
 		$element = null;
 		$hasPosition = false;
+		$nl = ord(PHP_EOL);
 
 		$split = preg_split("/(?:\s*)([\+\>\~])(?:\s*)	(?# combinators, other than 'descendant' )
 						|(\s)(?:\s*)					(?# any whitespace characters can separate selectors - we catch only the first, dump the rest -> we need to have atleast one to recognize descendant combinator )
@@ -84,7 +85,7 @@ class Css2XPath {
 						|\((\d*)n\s*[+-]\s*(\d*)\)		(?# pseudo class expression )
 						)/xu",$query,-1,PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 
-		//var_dump($split);
+//		var_dump($split);
 
 		for($i=0,$len=count($split);$i<$len;$i++) {
 			$tok = $split[$i];
@@ -159,8 +160,7 @@ class Css2XPath {
 			/*
 			 * combinators and new elements
 			 */
-
-			if($tok === ' ' || $tok === '>' || $tok === '+' || $tok === '~') {
+			if($tok === ' ' || $tok === '>' || $tok === '+' || $tok === '~' || ord($tok) === $nl) {
 				//new combinator means the end of attributes/pseudo-classes, we will flush the attribute stack into result
 				// however, before we flush attributes, we need to check, if we got an simple element selector, if not, let's use a wildcard
 				if($element === null) $result .= '*';
@@ -196,7 +196,7 @@ class Css2XPath {
 					continue;
 				}
 
-				if($tok === ' ') { //descendant combinator
+				if($tok === ' ' || ord($tok) === $nl) { //descendant combinator
 					$result .= '/descendant::';
 					continue;
 				}

@@ -8,12 +8,17 @@ $abyss = Abyss\Abyss::create();
 $abyss->init();
 
 
-$query = 'div + div *    .test a[attr|=\'sk\'][attr=val] i b.nice[attr*=val]:last-child > span[attr="val > \' val2"][attr="val \" val2"]';
-$query = "ul > li span.name";
+$query = 'div
+		+
+		div
+		*
+		 .test a[attr|=\'sk\'][attr=val]
+		i b.nice[attr*=val]:last-child > span[attr="val > \' \" val2"][attr="val \" val2"]';
+//$query = "ul > li span.name";
 
 echo "<br />query: ",$query,"<br /><br />";
 
-/*
+
 spl_autoload_register(function ($class) {
 	if (0 === strpos(ltrim($class, '/'), 'Symfony\Component\CssSelector')) {
 		if (file_exists($file = __DIR__.'/'.substr(str_replace('\\', '/', $class), 0).'.php')) {
@@ -31,7 +36,7 @@ Abyss\Utility\Timer::printTime('css','Symfony');
 Abyss\Utility\Timer::start('css');
 print CssSelector::toXPath($query);
 Abyss\Utility\Timer::printTime('css','Symfony');
- */
+
 
 Abyss\Utility\Css2XPath::process($query);
 
