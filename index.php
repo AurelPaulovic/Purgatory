@@ -16,8 +16,7 @@ $query = 'div
 		i b.nice[attr*=val]:last-child > span[attr="val > \' \" val2"][attr="val \" val2"]';
 //$query = "ul > li span.name";
 
-echo "<br />query: ",$query,"<br /><br />";
-
+/* echo "<br />query: ",$query,"<br /><br />";
 
 spl_autoload_register(function ($class) {
 	if (0 === strpos(ltrim($class, '/'), 'Symfony\Component\CssSelector')) {
@@ -35,7 +34,7 @@ Abyss\Utility\Timer::printTime('css','Symfony');
 
 Abyss\Utility\Timer::start('css');
 print CssSelector::toXPath($query);
-Abyss\Utility\Timer::printTime('css','Symfony');
+Abyss\Utility\Timer::printTime('css','Symfony'); */
 
 
 Abyss\Utility\Css2XPath::process($query);
