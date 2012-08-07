@@ -1,32 +1,72 @@
 <?php
+/*
+ Copyright 2012 Aurel Paulovic
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+namespace Abyss\Utility;
 
 /**
+ * The class provides a simple CSS3 Selectors to XPath 1.0 translation
  *
+ * <p>
+ * The main reason for building this parser was to get a faster alternative to Symfony's CssSelector [2],
+ * which performed relatively poorly on even slightly more complicated selectors. While the mentioned component
+ * is a proper OO parser, that checks the syntax, etc., it is also considerably more complex and slower, due to
+ * lots of objects instantinated while parsing the selector. On the other hand, other publicly available solutions like Zend's Css2Xpath [3]
+ * and various others, were lacking support for many selectors.
+ * </p>
+ *
+ * <p>
+ * The main use of the parser is to translate hard-coded selectors in DOM manipulation part of the Abyss framework. These
+ * selectors will be written by developers as an (although slower) easier alternative to relatively complicated XPath 1.0
+ * syntax. Therefore, the parser does not need to handle or check for invalid syntax in a fancy way. It simply translates
+ * the selector or throws an exception, in the case of an unsupported selector. No other checks, like allowed character codes,
+ * number of pseudo-classes, etc. are performed.
+ * </p>
+ *
+ * <p>
+ * References:
  * [1] http://blog.stevenlevithan.com/archives/match-quoted-string#comment-41068 - regexp match for string in quotes
+ * [2] https://github.com/symfony/CssSelector - Symfony CssSelector component
+ * [3] https://github.com/zendframework/zf2/blob/master/library/Zend/Dom/Css2Xpath.php - ZendFramework Css2Xpath
+ * </p>
  *
  * @author Aurel Paulovic <aurel.paulovic@gmail.com>
  * @since 0.1
  * @version 0.1
  * @namespace Abyss\Template
  * @copyright Copyright (c) 2012, Aurel Paulovic
- * @license
+ * @license ALv2 (http://www.apache.org/licenses/LICENSE-2.0)
  */
-class Css {
+class Css2XPath {
 	/**
 	 * TODO maybe do something about case
 	 *
-	 * @param unknown_type $query
+	 * @param string $query
+	 * @param string $leadAxis
+	 * @return string
 	 * @throws \InvalidArgumentException
-	 * @return Ambigous <string, unknown>
 	 */
-	public static function process($query) {
+	public static function process($query, $leadAxis = 'descendant-or-self') {
 		/*
 		 * This is a long method, but I don't want to split it for performance reasons, bear with me
 		 */
 
 		$attrStack = array();
-		$result = "descendant-or-self::";
-		$element = '';
+		$result = $leadAxis . '::';
+		$element = null;
 		$hasPosition = false;
 
 		$split = preg_split("/(?:\s*)([\+\>\~])(?:\s*)	(?# combinators, other than 'descendant' )
@@ -74,6 +114,8 @@ class Css {
 					if($quot === $val) $quot = '';
 					throw new \InvalidArgumentException("Invalid attribute syntax '{$attr}{$op}{$quot}{$val}{$quot}{$split[$i]}'");
 				}
+
+				//TODO we need to fix unescaped single quotes
 
 				if($op === '=') {
 					$attrStack[] = "(@$attr='$val')";
