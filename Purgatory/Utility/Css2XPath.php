@@ -70,10 +70,10 @@ class Css2XPath {
 		$hasPosition = false;
 		$nl = ord(PHP_EOL);
 
-		$split = preg_split("/(?:\s*)([\+\>\~])(?:\s*)	(?# combinators, other than 'descendant' )
+		$split = preg_split('/(?:\s*)([\+\>\~])(?:\s*)	(?# combinators, other than \'descendant\' )
 						|(\s)(?:\s*)					(?# any whitespace characters can separate selectors - we catch only the first, dump the rest -> we need to have atleast one to recognize descendant combinator )
 			 			|(?:\s*)(?U:([\"\'])((?:.*[^\\\\]+)*(?:(?:\\\\{2})*)+)\g{-2})	(?# all values enclosed in quotes, accouting for escaped quotes in value, modified from \cite{1})
-						|(?:\s*)([\+\>\~])(?:\s*)					(?# combinators, other than 'descendant' )
+						|(?:\s*)([\+\>\~])(?:\s*)					(?# combinators, other than \'descendant\' )
 						|(?:\s*)(						(?# -- start of simple matches -- )
 						\[								(?# attribute start )
 						|\]								(?# attribute end )
@@ -83,7 +83,7 @@ class Css2XPath {
 						|:								(?# pseudo class )
 						|::								(?# pseudo element )
 						|\((\d*)n\s*[+-]\s*(\d*)\)		(?# pseudo class expression )
-						)/xu",$query,-1,PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+						)/xu',$query,-1,PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 
 //		var_dump($split);
 
