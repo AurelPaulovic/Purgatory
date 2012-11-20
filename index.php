@@ -1,10 +1,10 @@
 <?php
 ob_start();
 
-require_once("Abyss".DIRECTORY_SEPARATOR."Utility".DIRECTORY_SEPARATOR."Timer.php");
-require_once("Abyss".DIRECTORY_SEPARATOR."Abyss.php");
+require_once("Purgatory".DIRECTORY_SEPARATOR."Utility".DIRECTORY_SEPARATOR."Timer.php");
+require_once("Purgatory".DIRECTORY_SEPARATOR."Purgatory.php");
 
-$abyss = Abyss\Abyss::create();
+$abyss = Purgatory\Purgatory::create();
 $abyss->init();
 
 
@@ -28,24 +28,24 @@ spl_autoload_register(function ($class) {
 use Symfony\Component\CssSelector\CssSelector;
 CssSelector::toXPath($query);
 
-Abyss\Utility\Timer::start('css');
+Purgatory\Utility\Timer::start('css');
 print CssSelector::toXPath($query);
-Abyss\Utility\Timer::printTime('css','Symfony');
+Purgatory\Utility\Timer::printTime('css','Symfony');
 
-Abyss\Utility\Timer::start('css');
+Purgatory\Utility\Timer::start('css');
 print CssSelector::toXPath($query);
-Abyss\Utility\Timer::printTime('css','Symfony'); */
+Purgatory\Utility\Timer::printTime('css','Symfony'); */
 
 
-Abyss\Utility\Css2XPath::process($query);
+Purgatory\Utility\Css2XPath::process($query);
 
-Abyss\Utility\Timer::start('css');
-print Abyss\Utility\Css2XPath::process($query);
-Abyss\Utility\Timer::printTime('css','Abyss');
+Purgatory\Utility\Timer::start('css');
+print Purgatory\Utility\Css2XPath::process($query);
+Purgatory\Utility\Timer::printTime('css','Purgatory');
 
-Abyss\Utility\Timer::start('css');
-print Abyss\Utility\Css2XPath::process($query);
-Abyss\Utility\Timer::printTime('css','Abyss');
+Purgatory\Utility\Timer::start('css');
+print Purgatory\Utility\Css2XPath::process($query);
+Purgatory\Utility\Timer::printTime('css','Purgatory');
 
 
 ?>

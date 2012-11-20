@@ -1,5 +1,5 @@
 <?php
-class User extends Abyss\Components\Component {
+class User extends Purgatory\Components\Component {
 	public function data(DOMDocument $tpl) {
 		$xpath = new DOMXPath($tpl);
 

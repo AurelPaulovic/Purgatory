@@ -15,12 +15,12 @@
 	limitations under the License.
 */
 
-require_once 'Abyss\Template\Interface\iDOMNodeList.php';
-require_once 'Abyss\Template\Interface\iDOMNode.php';
-require_once 'Abyss\Template\DOMNodeList.php';
+require_once 'Purgatory\Template\Interface\iDOMNodeList.php';
+require_once 'Purgatory\Template\Interface\iDOMNode.php';
+require_once 'Purgatory\Template\DOMNodeList.php';
 
-use Abyss\Template\DOMNodeList;
-use Abyss\Template\iDOMNode;
+use Purgatory\Template\DOMNodeList;
+use Purgatory\Template\iDOMNode;
 
 require_once 'PHPUnit\Framework\TestCase.php';
 
