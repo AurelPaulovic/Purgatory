@@ -33,7 +33,8 @@ namespace Purgatory\Utility;
  * selectors will be written by developers as an (although slower) easier alternative to relatively complicated XPath 1.0
  * syntax. Therefore, the parser does not need to handle or check for invalid syntax in a fancy way. It simply translates
  * the selector or throws an exception, in the case of an unsupported selector. No other checks, like allowed character codes,
- * number of pseudo-classes, etc. are performed.
+ * number of pseudo-classes, etc. are performed. Basically only fancy handling is provided for attribute selector values, where
+ * we fix quotation marks, since CSS allows to use escaped quotation marks inside string literals.
  * </p>
  *
  * <p>
@@ -64,12 +65,14 @@ class Css2XPath {
 		 * This is a long method, but I don't want to split it for performance reasons, bear with me
 		 */
 
-		$attrStack = array();
+		$attrStack = array(); //used to group attributes of node selector
 		$result = $leadAxis . '::';
 		$element = null;
 		$hasPosition = false;
 		$nl = ord(PHP_EOL);
 
+		/* First, we will split the whole CSS selector into smaller chunks denoted by logical boundaries,
+		 * that can be used to tokenize the selector without having to read the string character by character */
 		$split = preg_split('/(?:\s*)([\+\>\~])(?:\s*)	(?# combinators, other than \'descendant\' )
 						|(\s)(?:\s*)					(?# any whitespace characters can separate selectors - we catch only the first, dump the rest -> we need to have atleast one to recognize descendant combinator )
 			 			|(?:\s*)(?U:([\"\'])((?:.*[^\\\\]+)*(?:(?:\\\\{2})*)+)\g{-2})	(?# all values enclosed in quotes, accouting for escaped quotes in value, modified from \cite{1})
@@ -105,14 +108,14 @@ class Css2XPath {
 				$op = $split[++$i];
 				$quot = $split[++$i];
 
-				if($quot === '"' || $quot === '\'') {
-					$val = $split[++$i];
+				if($quot === '"' || $quot === '\'') { //check if we read qutoation mark or the actual value of the attribute (in the case no qutations marks were used)
+					$val = $split[++$i]; //we read quotation mark, so the value will be the next item in split
 				} else {
-					$val = $quot;
+					$val = $quot; //there were no qutation marks, so the attribute value is in $quot -> put it in $val
 				}
 
-				if($split[++$i] !== ']') {
-					if($quot === $val) $quot = '';
+				if($split[++$i] !== ']') { //the next item in split should be the end of attribute, otherwise it's an error
+					if($quot === $val) $quot = ''; //we didn't have quotation marks, so empty them for error message
 					throw new \InvalidArgumentException("Invalid attribute syntax '{$attr}{$op}{$quot}{$val}{$quot}{$split[$i]}'");
 				}
 
@@ -161,7 +164,7 @@ class Css2XPath {
 			 * combinators and new elements
 			 */
 			if($tok === ' ' || $tok === '>' || $tok === '+' || $tok === '~' || ord($tok) === $nl) {
-				/* The ord($tok) === $nl, where $nl = ord(PHP_EOL) matches a newline
+				/* The ord($tok) === $nl, while $nl = ord(PHP_EOL), matches a newline
 				 * Since in our preg_split, we take only the first whitespace character, this can be either \r (in the case of \r\n)
 				 * or \n (in the case of \n), depending on the OS the script is running on. Therefore, we need to check against the
 				 * first char in PHP_EOL, to find a newline (or what is left of it after preg_split)
@@ -180,7 +183,7 @@ class Css2XPath {
 					$element = null;
 				}
 
-				if(!empty($attrStack)) {
+				if(!empty($attrStack)) { //flush all attributes of the last element
 					$result .= '[' . implode(' and ',$attrStack) . ']';
 					$attrStack = array();
 				}
@@ -209,7 +212,7 @@ class Css2XPath {
 			}
 
 			//nothing matched, means that we got a simple element selector
-			//save it and use later, when we now if we are matching some position (if we use position, we need to use element name via name() function)
+			//save it and use later, when we know if we are matching some position (if we use position, we need to use element name via name() function)
 			$element = $tok;
 		}
 
