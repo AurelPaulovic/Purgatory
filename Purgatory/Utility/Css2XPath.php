@@ -107,32 +107,54 @@ class Css2XPath {
 				$attr = $split[++$i];
 				$op = $split[++$i];
 				$quot = $split[++$i];
+				$valA = null;
 
 				if($quot === '"' || $quot === '\'') { //check if we read qutoation mark or the actual value of the attribute (in the case no qutations marks were used)
-					$val = $split[++$i]; //we read quotation mark, so the value will be the next item in split
+					$origVal = $val = $split[++$i]; //we read quotation mark, so the value will be the next item in split
+
+					//first let us remove escaped characters and character codes that we can not have
+					$val = preg_replace(array('/\\\\[a-fA-F0-9]{6}|\\\\[^\"\']\s/xu','/\\\\([\"\'])/'),array('','\\1'),$val);
+
+					if(strpos($val,"'")!==false) {
+						$valA = explode("'",$val);
+					}
 				} else {
 					$val = $quot; //there were no qutation marks, so the attribute value is in $quot -> put it in $val
 				}
 
 				if($split[++$i] !== ']') { //the next item in split should be the end of attribute, otherwise it's an error
-					if($quot === $val) $quot = ''; //we didn't have quotation marks, so empty them for error message
+					if($quot === $origVal) $quot = ''; //we didn't have quotation marks, so empty them for error message
 					throw new \InvalidArgumentException("Invalid attribute syntax '{$attr}{$op}{$quot}{$val}{$quot}{$split[$i]}'");
 				}
 
-				//TODO we need to fix unescaped single quotes
-
-				if($op === '=') {
-					$attrStack[] = "(@$attr='$val')";
-				} elseif($op === '~=') {
-					$attrStack[] = "(contains(concat(' ', normalize-space(@$attr), ' '), ' {$val} '))";
-				} elseif($op === '^=') {
-					$attrStack[] = "(starts-with(@$attr,'$val'))";
-				} elseif($op === '*=') {
-					$attrStack[] = "(contains(@$attr,'$val'))";
-				} elseif($op === '$=') {
-					$attrStack[] = "(substring(@$attr, string-length(@$attr)-" . (mb_strlen($val) - 1) . ") = '$val')";
-				} else { // |=
-					$attrStack[] = "((@$attr='$val') or starts-with(@$attr,'{$val}-'))";
+				if($valA===null) { //simple value without concat
+					if($op === '=') {
+						$attrStack[] = "(@$attr='$val')";
+					} elseif($op === '~=') {
+						$attrStack[] = "(contains(concat(' ', normalize-space(@$attr), ' '), ' {$val} '))";
+					} elseif($op === '^=') {
+						$attrStack[] = "(starts-with(@$attr,'$val'))";
+					} elseif($op === '*=') {
+						$attrStack[] = "(contains(@$attr,'$val'))";
+					} elseif($op === '$=') {
+						$attrStack[] = "(substring(@$attr, string-length(@$attr)-" . (mb_strlen($val) - 1) . ") = '$val')";
+					} else { // |=
+						$attrStack[] = "((@$attr='$val') or starts-with(@$attr,'{$val}-'))";
+					}
+				} else { //array of strings - escaping single quotes in literal
+					if($op === '=') {
+						$attrStack[] = "(@$attr=concat('".implode("',\"'\",'",$valA)."'))";
+					} elseif($op === '~=') {
+						$attrStack[] = "(contains(concat(' ', normalize-space(@$attr), ' '), ' {$val} '))"; //TODO
+					} elseif($op === '^=') {
+						$attrStack[] = "(starts-with(@$attr,'$val'))"; //TODO
+					} elseif($op === '*=') {
+						$attrStack[] = "(contains(@$attr,'$val'))"; //TODO
+					} elseif($op === '$=') {
+						$attrStack[] = "(substring(@$attr, string-length(@$attr)-" . (mb_strlen($val) - 1) . ") = '$val')"; //TODO
+					} else { // |=
+						$attrStack[] = "((@$attr='$val') or starts-with(@$attr,'{$val}-'))"; //TODO
+					}
 				}
 
 				continue;
