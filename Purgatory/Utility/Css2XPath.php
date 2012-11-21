@@ -53,11 +53,14 @@ namespace Purgatory\Utility;
  */
 class Css2XPath {
 	/**
+	 * Best-effort transform from CSS selector query to XPath 1.0 selector query
+	 *
 	 * TODO maybe do something about case
 	 *
-	 * @param string $query
-	 * @param string $leadAxis
-	 * @return string
+	 * @param string $query CSS selector query
+	 * @param string $leadAxis lead axis of the resulting XPath selector
+	 *
+	 * @return string XPath selector
 	 * @throws \InvalidArgumentException
 	 */
 	public static function process($query, $leadAxis = 'descendant-or-self') {
@@ -87,8 +90,6 @@ class Css2XPath {
 						|::								(?# pseudo element )
 						|\((\d*)n\s*[+-]\s*(\d*)\)		(?# pseudo class expression )
 						)/xu',$query,-1,PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-
-//		var_dump($split);
 
 		for($i=0,$len=count($split);$i<$len;$i++) {
 			$tok = $split[$i];
@@ -145,15 +146,15 @@ class Css2XPath {
 					if($op === '=') {
 						$attrStack[] = "(@$attr=concat('".implode("',\"'\",'",$valA)."'))";
 					} elseif($op === '~=') {
-						$attrStack[] = "(contains(concat(' ', normalize-space(@$attr), ' '), ' {$val} '))"; //TODO
+						$attrStack[] = "(contains(concat(' ', normalize-space(@$attr), ' '), concat(' ".implode("',\"'\",'",$valA)." ')))";
 					} elseif($op === '^=') {
-						$attrStack[] = "(starts-with(@$attr,'$val'))"; //TODO
+						$attrStack[] = "(starts-with(@$attr,concat('".implode("',\"'\",'",$valA)."')))";
 					} elseif($op === '*=') {
-						$attrStack[] = "(contains(@$attr,'$val'))"; //TODO
+						$attrStack[] = "(contains(@$attr,concat('".implode("',\"'\",'",$valA)."')))";
 					} elseif($op === '$=') {
-						$attrStack[] = "(substring(@$attr, string-length(@$attr)-" . (mb_strlen($val) - 1) . ") = '$val')"; //TODO
+						$attrStack[] = "(substring(@$attr, string-length(@$attr)-" . (mb_strlen(implode("'",$valA)) - 1) . ") = concat('".implode("',\"'\",'",$valA)."'))";
 					} else { // |=
-						$attrStack[] = "((@$attr='$val') or starts-with(@$attr,'{$val}-'))"; //TODO
+						$attrStack[] = "((@$attr=concat('".implode("',\"'\",'",$valA)."')) or starts-with(@$attr,concat('".implode("',\"'\",'",$valA)."-')))";
 					}
 				}
 
