@@ -116,7 +116,7 @@ class Css2XPath {
 					//first let us remove escaped characters and character codes that we can not have
 					$val = preg_replace(array('/\\\\[a-fA-F0-9]{6}|\\\\[^\"\']\s/xu','/\\\\([\"\'])/'),array('','\\1'),$val);
 
-					if(strpos($val,"'")!==false) {
+					if(strpos($val,"'") !== false) {
 						$valA = explode("'",$val);
 					}
 				} else {
@@ -128,7 +128,7 @@ class Css2XPath {
 					throw new \InvalidArgumentException("Invalid attribute syntax '{$attr}{$op}{$quot}{$val}{$quot}{$split[$i]}'");
 				}
 
-				if($valA===null) { //simple value without concat
+				if($valA === null) { //simple value without concat
 					if($op === '=') {
 						$attrStack[] = "(@$attr='$val')";
 					} elseif($op === '~=') {
