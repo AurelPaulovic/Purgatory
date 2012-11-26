@@ -88,7 +88,8 @@ class Css2XPath {
 						|[\~\^\*\$\|]?=					(?# attribute value operator )
 						|:								(?# pseudo class )
 						|::								(?# pseudo element )
-						|\((\d*)n\s*[+-]\s*(\d*)\)		(?# pseudo class expression )
+						|\((\d*)n\s*[+-]\s*(\d*)\)		(?# pseudo class math expression )
+						|\(([a-zA-Z\-]+)\)
 						)/xu',$query,-1,PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 
 		for($i=0,$len=count($split);$i<$len;$i++) {
@@ -173,6 +174,9 @@ class Css2XPath {
 				} elseif($pclass === 'last-child') {
 					$attrStack[] = '(position() = last())';
 					$hasPosition = true;
+				} elseif($pclass === 'lang') {
+					$lang = $split[$i+=2];
+					$attrStack[] = "ancestor-or-self::node()[@xml:lang='$lang' or @lang='$lang' or starts-with(@xml:lang, concat('$lang','-')) or starts-with(@lang, concat('$lang','-'))]";
 				} else {
 					throw new \InvalidArgumentException("Unsupported selector - pseudo-class '$pclass'");
 				}
