@@ -89,7 +89,7 @@ class Css2XPath {
 						|:								(?# pseudo class )
 						|::								(?# pseudo element )
 						|\((\d*)n\s*[+-]\s*(\d*)\)		(?# pseudo class math expression )
-						|\(([a-zA-Z\-]+)\)
+						|\(([a-zA-Z\-]+)\)              (?# non-quoted string pseudo class or function value )
 						)/xu',$query,-1,PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 
 		for($i=0, $len=count($split); $i < $len; $i++) {
