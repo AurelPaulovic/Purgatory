@@ -76,7 +76,7 @@ class Css2XPath {
 
 		/* First, we will split the whole CSS selector into smaller chunks denoted by logical boundaries,
 		 * that can be used to tokenize the selector without having to read the string character by character */
-		$split = preg_split('/(?:\s*)([\+\>\~])(?:\s*)	(?# combinators, other than \'descendant\' )
+		$split = preg_split('/(?:\s*)([\+\>\~,])(?:\s*)	(?# combinators, other than \'descendant\', and selector group )
 						|(\s)(?:\s*)					(?# any whitespace characters can separate selectors - we catch only the first, dump the rest -> we need to have atleast one to recognize descendant combinator )
 			 			|(?:\s*)(?U:([\"\'])((?:.*[^\\\\]+)*(?:(?:\\\\{2})*)+)\g{-2})	(?# all values enclosed in quotes, accouting for escaped quotes in value, modified from \cite{1})
 						|(?:\s*)([\+\>\~])(?:\s*)					(?# combinators, other than \'descendant\' )
@@ -184,9 +184,9 @@ class Css2XPath {
 			}
 
 			/*
-			 * combinators and new elements
+			 * combinators, selector groups and new elements
 			 */
-			if($tok === ' ' || $tok === '>' || $tok === '+' || $tok === '~' || ord($tok) === $nl) {
+			if($tok === ' ' || $tok === '>' || $tok === '+' || $tok === '~' || ord($tok) === $nl || $tok === ',') {
 				/* The ord($tok) === $nl, while $nl = ord(PHP_EOL), matches a newline
 				 * Since in our preg_split, we take only the first whitespace character, this can be either \r (in the case of \r\n)
 				 * or \n (in the case of \n), depending on the OS the script is running on. Therefore, we need to check against the
@@ -230,6 +230,11 @@ class Css2XPath {
 
 				if($tok === ' ' || ord($tok) === $nl) { //descendant combinator
 					$result .= '/descendant::';
+					continue;
+				}
+
+				if($tok === ',') { //selector group
+					$result .= " | $leadAxis::";
 					continue;
 				}
 			}
