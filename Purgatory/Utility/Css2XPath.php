@@ -68,7 +68,7 @@ class Css2XPath {
 		 * This is a long method, but I don't want to split it for performance reasons, bear with me
 		 */
 
-		$attrStack = array(); //used to group attributes of node selector
+		$predicates = array(); //used to group predicates of node selector
 		$result = $leadAxis . '::';
 		$element = null;
 		$hasPosition = false;
@@ -92,16 +92,16 @@ class Css2XPath {
 						|\(([a-zA-Z\-]+)\)
 						)/xu',$query,-1,PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 
-		for($i=0,$len=count($split);$i<$len;$i++) {
+		for($i=0, $len=count($split); $i < $len; $i++) {
 			$tok = $split[$i];
 
 			if($tok === '.') { //class selector
-				$attrStack[] = "(contains(concat(' ', normalize-space(@class), ' '), ' {$split[++$i]} '))";
+				$predicates[] = "(contains(concat(' ', normalize-space(@class), ' '), ' {$split[++$i]} '))";
 				continue;
 			}
 
 			if($tok === '#') { //ID selector
-				$attrStack[] = "(@id='{$split[++$i]}')";
+				$predicates[] = "(@id='{$split[++$i]}')";
 				continue;
 			}
 
@@ -131,31 +131,31 @@ class Css2XPath {
 
 				if($valA === null) { //simple value without concat
 					if($op === '=') {
-						$attrStack[] = "(@$attr='$val')";
+						$predicates[] = "(@$attr='$val')";
 					} elseif($op === '~=') {
-						$attrStack[] = "(contains(concat(' ', normalize-space(@$attr), ' '), ' {$val} '))";
+						$predicates[] = "(contains(concat(' ', normalize-space(@$attr), ' '), ' {$val} '))";
 					} elseif($op === '^=') {
-						$attrStack[] = "(starts-with(@$attr,'$val'))";
+						$predicates[] = "(starts-with(@$attr,'$val'))";
 					} elseif($op === '*=') {
-						$attrStack[] = "(contains(@$attr,'$val'))";
+						$predicates[] = "(contains(@$attr,'$val'))";
 					} elseif($op === '$=') {
-						$attrStack[] = "(substring(@$attr, string-length(@$attr)-" . (mb_strlen($val) - 1) . ") = '$val')";
+						$predicates[] = "(substring(@$attr, string-length(@$attr)-" . (mb_strlen($val) - 1) . ") = '$val')";
 					} else { // |=
-						$attrStack[] = "((@$attr='$val') or starts-with(@$attr,'{$val}-'))";
+						$predicates[] = "((@$attr='$val') or starts-with(@$attr,'{$val}-'))";
 					}
 				} else { //array of strings - escaping single quotes in literal
 					if($op === '=') {
-						$attrStack[] = "(@$attr=concat('".implode("',\"'\",'",$valA)."'))";
+						$predicates[] = "(@$attr=concat('".implode("',\"'\",'",$valA)."'))";
 					} elseif($op === '~=') {
-						$attrStack[] = "(contains(concat(' ', normalize-space(@$attr), ' '), concat(' ".implode("',\"'\",'",$valA)." ')))";
+						$predicates[] = "(contains(concat(' ', normalize-space(@$attr), ' '), concat(' ".implode("',\"'\",'",$valA)." ')))";
 					} elseif($op === '^=') {
-						$attrStack[] = "(starts-with(@$attr,concat('".implode("',\"'\",'",$valA)."')))";
+						$predicates[] = "(starts-with(@$attr,concat('".implode("',\"'\",'",$valA)."')))";
 					} elseif($op === '*=') {
-						$attrStack[] = "(contains(@$attr,concat('".implode("',\"'\",'",$valA)."')))";
+						$predicates[] = "(contains(@$attr,concat('".implode("',\"'\",'",$valA)."')))";
 					} elseif($op === '$=') {
-						$attrStack[] = "(substring(@$attr, string-length(@$attr)-" . (mb_strlen(implode("'",$valA)) - 1) . ") = concat('".implode("',\"'\",'",$valA)."'))";
+						$predicates[] = "(substring(@$attr, string-length(@$attr)-" . (mb_strlen(implode("'",$valA)) - 1) . ") = concat('".implode("',\"'\",'",$valA)."'))";
 					} else { // |=
-						$attrStack[] = "((@$attr=concat('".implode("',\"'\",'",$valA)."')) or starts-with(@$attr,concat('".implode("',\"'\",'",$valA)."-')))";
+						$predicates[] = "((@$attr=concat('".implode("',\"'\",'",$valA)."')) or starts-with(@$attr,concat('".implode("',\"'\",'",$valA)."-')))";
 					}
 				}
 
@@ -165,18 +165,19 @@ class Css2XPath {
 			if($tok === ':') { //pseudo class TODO
 				//root only-child first-of-type last-of-type  only-of-type empty
 				//nth-child nth-last-child nth-of-type nth-last-of-type
-				//lang enabled disabled checked not
+				//enabled disabled checked not
 
 				$pclass = $split[++$i];
 				if($pclass === 'first-child') {
-					$attrStack[] = '(position() = 1)';
+					$predicates[] = '(position() = 1)';
 					$hasPosition = true;
 				} elseif($pclass === 'last-child') {
-					$attrStack[] = '(position() = last())';
+					$predicates[] = '(position() = last())';
 					$hasPosition = true;
 				} elseif($pclass === 'lang') {
-					$lang = $split[$i+=2];
-					$attrStack[] = "ancestor-or-self::node()[@xml:lang='$lang' or @lang='$lang' or starts-with(@xml:lang, concat('$lang','-')) or starts-with(@lang, concat('$lang','-'))]";
+					$i += 2;
+					$lang = $split[$i];
+					$predicates[] = "ancestor-or-self::node()[@xml:lang='$lang' or @lang='$lang' or starts-with(@xml:lang, concat('$lang','-')) or starts-with(@lang, concat('$lang','-'))]";
 				} else {
 					throw new \InvalidArgumentException("Unsupported selector - pseudo-class '$pclass'");
 				}
@@ -200,24 +201,24 @@ class Css2XPath {
 				// new combinator means the end of attributes/pseudo-classes, we will flush the attribute stack into result
 				// however, before we flush attributes, we need to check, if we got an simple element selector, if not, let's use a wildcard
 				if($element === null) $result .= '*';
-				else  {
+				else {
 					if($hasPosition === true) {
 						$hasPosition = false;
-						$attrStack[] = "(name() = '$element')";
+						$predicates[] = "(name() = '$element')";
 						$result .= '*';
 					} else $result .= $element;
 
 					$element = null;
 				}
 
-				if(!empty($attrStack)) { //flush all attributes of the last element
-					$result .= '[' . implode(' and ',$attrStack) . ']';
-					$attrStack = array();
+				if(!empty($predicates)) { //flush all attributes of the last element
+					$result .= '[' . implode(' and ',$predicates) . ']';
+					$predicates = array();
 				}
 
 				if($tok === '+') { //adjacent sibling combinator
 					$result .= '/following-sibling::';
-					$attrStack[] = '(position() = 1)';
+					$predicates[] = '(position() = 1)';
 					$hasPosition = true;
 					continue;
 				}
@@ -250,19 +251,19 @@ class Css2XPath {
 
 		//flush nonterminated stuff (copy/paste from loop)
 		if($element === null) $result .= '*';
-		else  {
+		else {
 			if($hasPosition === true) {
 				$hasPosition = false;
-				$attrStack[] = "(name() = '$element')";
+				$predicates[] = "(name() = '$element')";
 				$result .= '*';
 			} else $result .= $element;
 
 			$element = null;
 		}
 
-		if(!empty($attrStack)) {
-			$result .= '[' . implode(' and ',$attrStack) . ']';
-			$attrStack = array();
+		if(!empty($predicates)) {
+			$result .= '[' . implode(' and ',$predicates) . ']';
+			$predicates = array();
 		}
 
 		return $result;

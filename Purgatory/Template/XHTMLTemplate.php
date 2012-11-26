@@ -33,7 +33,7 @@ class XHTMLTemplate extends Template {
 
 		$options = LIBXML_COMPACT | LIBXML_NOWARNING | LIBXML_NOXMLDECL | LIBXML_PARSEHUGE;
 
-		if($file!=null) $this->dom->load($file,$options);
+		if($file !== null) $this->dom->load($file,$options);
 		else $this->dom->loadXML($string,$options);
 	}
 

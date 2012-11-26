@@ -54,7 +54,7 @@ interface iQueryable {
 	 * In the case that multiple nodes should match (invalid document), returns the first node.
 	 *
 	 * @param string $id value of id attribute
-	 * @return \Purgatory\Template\iDOMNode the matching node or NULL if no such node exists
+	 * @return \Purgatory\Template\iDOMNode the matching node or null if no such node exists
 	 */
 	public function getNodeById($id);
 

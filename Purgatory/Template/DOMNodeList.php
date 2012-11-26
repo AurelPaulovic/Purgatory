@@ -47,8 +47,8 @@ class DOMNodeList implements iDOMNodeList {
 	 * @param \Traversable|array|\Purgatory\Template\iDOMNode $nodes an array (\Traversable) of \Purgatory\Template\iDOMNode-s or a single node
 	 * @throws \InvalidArgumentException
 	 */
-	public function __construct($nodes = NULL) {
-		if($nodes !== NULL ){
+	public function __construct($nodes = null) {
+		if($nodes !== null ){
 			if(is_array($nodes) || $nodes instanceof \Traversable) {
 				//an array of nodes
 				foreach($nodes as $node) {
@@ -171,7 +171,7 @@ class DOMNodeList implements iDOMNodeList {
 	 * Current position of the iterator in list
 	 * @var integer
 	 */
-	private $p_position = NULL;
+	private $p_position = null;
 
 	/**
 	 * Returns the current Node
@@ -180,14 +180,14 @@ class DOMNodeList implements iDOMNodeList {
 	 * @return Purgatory\Template\iDOMNode current Node
 	 */
 	public function current() {
-		return ($this->p_position === NULL ? NULL : $this->list[$this->p_position]);
+		return ($this->p_position === null ? null : $this->list[$this->p_position]);
 	}
 
 	/**
 	 * Returns the current iterator position in list
 	 *
 	 * @implements \Iterator::key()
-	 * @return integer current position in list or NULL on failure
+	 * @return integer current position in list or null on failure
 	 */
 	public function key() {
 		return $this->p_position;
@@ -200,7 +200,7 @@ class DOMNodeList implements iDOMNodeList {
 	 * @return void
 	 */
 	public function next() {
-		if($this->length <= (++$this->p_position)) $this->p_position = NULL;
+		if($this->length <= (++$this->p_position)) $this->p_position = null;
 	}
 
 	/**
@@ -210,7 +210,7 @@ class DOMNodeList implements iDOMNodeList {
 	 * @return void
 	 */
 	public function rewind() {
-		if($this->length === 0) $this->p_position = NULL;
+		if($this->length === 0) $this->p_position = null;
 		else $this->p_position = 0;
 	}
 
@@ -221,6 +221,6 @@ class DOMNodeList implements iDOMNodeList {
 	 * @return boolean true, if the iterator position is valid, false otherwise
 	 */
 	public function valid() {
-		return ($this->p_position === NULL ? false : true);
+		return ($this->p_position === null ? false : true);
 	}
 }

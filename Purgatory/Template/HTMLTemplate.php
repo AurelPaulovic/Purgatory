@@ -32,7 +32,7 @@ class HTMLTemplate extends Template {
 
 		$options = LIBXML_COMPACT | LIBXML_NOWARNING | LIBXML_NOXMLDECL | LIBXML_PARSEHUGE;
 
-		if($file!=null) $this->dom->loadHTMLFile($file,$options);
+		if($file !== null) $this->dom->loadHTMLFile($file,$options);
 		else $this->dom->loadHTML($string,$options);
 	}
 

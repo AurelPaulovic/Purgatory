@@ -34,9 +34,9 @@ final class Purgatory {
 	 * @return Purgatory singleton instance of Purgatory framework
 	 */
 	public static function create() {
-		static $abyss=null;
+		static $abyss = null;
 
-		if($abyss===null) $abyss = new self;
+		if($abyss === null) $abyss = new self;
 		return $abyss;
 	}
 
@@ -56,12 +56,12 @@ final class Purgatory {
 	 * @return boolean true, if the initialization run successfully
 	 */
 	public function init() {
-		static $ran=false;
+		static $ran = false;
 		if($ran) return true;
 
 		//TODO set default values, DI, etc.
 
-		$ran=true;
+		$ran = true;
 		return true;
 	}
 
@@ -72,11 +72,11 @@ final class Purgatory {
 	 * @return void
 	 */
 	private function autoloadHandler($name) {
-		static $root = NULL;
-		if($root===NULL) $root = __DIR__ . DIRECTORY_SEPARATOR;
+		static $root = null;
+		if($root === null) $root = __DIR__ . DIRECTORY_SEPARATOR;
 
 		$parts = explode('\\',$name);
-		if($parts[0]==='Purgatory' && count($parts)>1) {
+		if($parts[0] === 'Purgatory' && count($parts) > 1) {
 			array_shift($parts);
 			$file = array_pop($parts) . '.php';
 			$path = $root . implode(DIRECTORY_SEPARATOR,$parts) . DIRECTORY_SEPARATOR;

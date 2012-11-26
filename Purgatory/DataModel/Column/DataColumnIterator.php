@@ -63,7 +63,7 @@ class DataColumnIterator implements \Iterator {
 	 */
     public function valid() {
         $key = key($this->cols);
-        return ($key!==NULL && $key!==FALSE);
+        return ($key !== null && $key !== false);
     }
 
 	/**

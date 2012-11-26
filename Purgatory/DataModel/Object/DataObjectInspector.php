@@ -37,7 +37,7 @@ abstract class DataObjectInspector {
 	public static final function getDOPublicDOC(DataObject $o) {
 		$tmp = get_object_vars($o);
 		$result = array();
-		foreach($tmp as $key=>&$val) {
+		foreach($tmp as $key => &$val) {
 			if($val instanceof Col\DataColumn) $result[$key] = $val;
 		}
 		return $result;

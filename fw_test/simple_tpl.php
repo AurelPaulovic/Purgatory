@@ -1,7 +1,7 @@
 <?php
 
 $dom = new \DOMDocument('1.0','UTF-8');
-$dom->loadHTMLFile("fw_test/tpl/testPage.xhtml");
+$dom->loadHTMLFile(__DIR__ ."/tpl/testPage.xhtml");
 
 $xpath = new \DOMXPath($dom);
 
@@ -21,6 +21,11 @@ $lastEle->appendChild($ele);
 foreach($xpath->query("//*[@id='gender']") as $ele) {
 	/* @var $ele \DOMElement */
 	echo $ele->getAttribute('id'),"<br />";
+}
+
+foreach($xpath->query("//p[ancestor-or-self::node()[@xml:lang='sk' or @lang='sk' or starts-with(@xml:lang, concat('sk','-')) or starts-with(@lang, concat('sk','-'))]]") as $ele) {
+	/* @var $ele \DOMElement */
+	$ele->setAttribute('style','color:red;');
 }
 
 echo "-------------<br />";

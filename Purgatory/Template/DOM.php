@@ -44,7 +44,7 @@ class DOM implements iQueryable {
 	 */
 	public function css($query) {
 		$xquery = $this->css2xpath($query);
-		if($xquery !== NULL) {
+		if($xquery !== null) {
 			try { //we do this just to get a proper source of the exception, the does not need to know, that we do CSS to XPath translation
 				return $this->xp($xquery);
 			} catch(\Exception $e) {}
@@ -57,7 +57,7 @@ class DOM implements iQueryable {
 	 * @see \Purgatory\Template\iQueryable::xp()
 	 */
 	public function xp($query) {
-		if($this->xpath === NULL) $this->xpath = new \DOMXPath($this->dom);
+		if($this->xpath === null) $this->xpath = new \DOMXPath($this->dom);
 
 		$tmpList = $this->xpath->query($query);
 		if($tmpList === false) throw new \InvalidArgumentException("The query '$query' is invalid.");
@@ -69,7 +69,7 @@ class DOM implements iQueryable {
 	 */
 	public function getNodeById($id) {
 		$nodes = $this->xp("//*[@id='$id']");
-		return ($nodes->getLength() === 0 ? NULL : $nodes->getNode(0));
+		return ($nodes->getLength() === 0 ? null : $nodes->getNode(0));
 	}
 
 	/**
@@ -92,11 +92,11 @@ class DOM implements iQueryable {
 	 * TODO: possibly refactor to utility class
 	 *
 	 * @param string $query CSS query
-	 * @return string XPath query or NULL, if could not convert the query
+	 * @return string XPath query or null, if could not convert the query
 	 */
 	private function css2xpath($query) {
 		//TODO stub
 
-		return NULL;
+		return null;
 	}
 }
