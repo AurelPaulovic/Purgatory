@@ -181,7 +181,7 @@ class Css2XPath {
 				} elseif($pclass === 'empty') {
 					$predicates[] = '(count(child::node()[not(self::comment()) and not(self::processing-instruction())])=0)';
 				} elseif($pclass === 'only-child') {
-					$predicates[] = '(count(following-sibling::node()[not(self::text()) and not(self::comment()) and not(self::processing-instruction())])=0 and count(preceding-sibling::node()[not(self::text()) and not(self::comment()) and not(self::processing-instruction())])=0)';
+					$predicates[] = '(count(following-sibling::*)=0 and count(preceding-sibling::*)=0)';
 				} else {
 					throw new \InvalidArgumentException("Unsupported selector - pseudo-class '$pclass'");
 				}
