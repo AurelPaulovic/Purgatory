@@ -163,7 +163,7 @@ class Css2XPath {
 			}
 
 			if($tok === ':') { //pseudo class TODO
-				//root only-child first-of-type last-of-type  only-of-type empty
+				//root first-of-type last-of-type  only-of-type
 				//nth-child nth-last-child nth-of-type nth-last-of-type
 				//enabled disabled checked not
 
@@ -178,6 +178,10 @@ class Css2XPath {
 					$i += 2;
 					$lang = $split[$i];
 					$predicates[] = "ancestor-or-self::node()[@xml:lang='$lang' or @lang='$lang' or starts-with(@xml:lang, concat('$lang','-')) or starts-with(@lang, concat('$lang','-'))]";
+				} elseif($pclass === 'empty') {
+					$predicates[] = '(count(child::node()[not(self::comment()) and not(self::processing-instruction())])=0)';
+				} elseif($pclass === 'only-child') {
+					$predicates[] = '(count(following-sibling::node()[not(self::text()) and not(self::comment()) and not(self::processing-instruction())])=0 and count(preceding-sibling::node()[not(self::text()) and not(self::comment()) and not(self::processing-instruction())])=0)';
 				} else {
 					throw new \InvalidArgumentException("Unsupported selector - pseudo-class '$pclass'");
 				}
